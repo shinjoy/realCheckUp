@@ -1,0 +1,121 @@
+package kr.nomad.mars.dao;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
+import javax.sql.DataSource;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+
+import kr.nomad.mars.dto.UserBasic;
+
+public class UserBasicDao {
+	
+	private JdbcTemplate jdbcTemplate;
+	public void setDataSource(DataSource dataSource) {
+	    this.jdbcTemplate = new JdbcTemplate(dataSource);
+	}
+
+	private RowMapper userbasicMapper = new RowMapper() {
+		public UserBasic mapRow(ResultSet rs, int rowNum) throws SQLException {
+			UserBasic userbasic = new UserBasic();
+			userbasic.setSeq(rs.getInt("seq"));
+			userbasic.setUserId(rs.getString("user_id"));
+			userbasic.setPressure(rs.getInt("pressure"));
+			userbasic.setBloodsugar(rs.getInt("bloodsugar"));
+			userbasic.setCholesterol(rs.getInt("cholesterol"));
+			userbasic.setLiver(rs.getInt("liver"));
+			userbasic.setmPressure(rs.getInt("m_pressure "));
+			userbasic.setmBloodsugar(rs.getInt("m_bloodsugar"));
+			userbasic.setmCholesterol(rs.getInt("m_cholesterol"));
+			userbasic.setmLiver(rs.getInt("m_liver"));
+			userbasic.setEatBreakfast(rs.getInt("eat_breakfast"));
+			userbasic.setRegDate(rs.getInt("reg_date"));
+			return userbasic;
+		}
+	};
+
+	public void addUserBasic(final UserBasic userbasic) {
+		String query = "" +
+				"INSERT INTO T_NF_USER_BASIC " +
+				"	( user_id, pressure, bloodsugar, cholesterol, liver, m_pressure , m_bloodsugar, m_cholesterol, m_liver, eat_breakfast, reg_date) " +
+				"VALUES " +
+				"	( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, sysdate()) ";
+		this.jdbcTemplate.update(query, new Object[] {
+		
+			userbasic.getUserId(),
+			userbasic.getPressure(),
+			userbasic.getBloodsugar(),
+			userbasic.getCholesterol(),
+			userbasic.getLiver(),
+			userbasic.getmPressure(),
+			userbasic.getmBloodsugar(),
+			userbasic.getmCholesterol(),
+			userbasic.getmLiver(),
+			userbasic.getEatBreakfast()
+		
+		});
+	}
+
+	public void deleteUserBasic(String seq) {
+		String query = "DELETE FROM T_NF_USER_BASIC WHERE seq = ? ";
+		this.jdbcTemplate.update(query, new Object[] { seq });
+	}
+
+	public void updateUserBasic(UserBasic userbasic) { 
+		String query = "" + 
+				"UPDATE T_NF_USER_BASIC SET " +
+			
+			
+				"	pressure = ?, " +
+				"	bloodsugar = ?, " +
+				"	cholesterol = ?, " +
+				"	liver = ?, " +
+				"	m_pressure  = ?, " +
+				"	m_bloodsugar = ?, " +
+				"	m_cholesterol = ?, " +
+				"	m_liver = ?, " +
+				"	eat_breakfast = ? " +
+			
+				"WHERE seq = ? ";
+		this.jdbcTemplate.update(query, new Object[] {
+			
+			
+			userbasic.getPressure(),
+			userbasic.getBloodsugar(),
+			userbasic.getCholesterol(),
+			userbasic.getLiver(),
+			userbasic.getmPressure(),
+			userbasic.getmBloodsugar(),
+			userbasic.getmCholesterol(),
+			userbasic.getmLiver(),
+			userbasic.getEatBreakfast(),
+			userbasic.getSeq()
+		});
+	}
+
+	public UserBasic getUserBasic(String seq) {
+		String query = "" + 
+				"SELECT seq, user_id, pressure, bloodsugar, cholesterol, liver, m_pressure , m_bloodsugar, m_cholesterol, m_liver, eat_breakfast, reg_date " +
+				"FROM T_NF_USER_BASIC " +
+				"WHERE seq = ? ";
+		return (UserBasic)this.jdbcTemplate.queryForObject(query, new Object[] { seq }, this.userbasicMapper);
+	}
+
+	public List<UserBasic> getUserBasicList(int page, int itemCountPerPage) {
+		String query = "" +
+				"SELECT TOP "+ itemCountPerPage +" seq, user_id, pressure, bloodsugar, cholesterol, liver, m_pressure , m_bloodsugar, m_cholesterol, m_liver, eat_breakfast, reg_date " +
+				"FROM T_NF_USER_BASIC " +
+				"WHERE seq <= ( " +
+				"	SELECT MIN(seq) " +
+				"	FROM ( " +
+				"		SELECT TOP "+ ((page-1) * itemCountPerPage + 1) +" seq " +
+				"		FROM T_NF_USER_BASIC " +
+				"		ORDER BY seq DESC " +
+				"	) AS A) " +
+				"ORDER BY seq DESC";
+		return (List<UserBasic>)this.jdbcTemplate.query(query, this.userbasicMapper);
+	}
+
+}

@@ -1,0 +1,184 @@
+package kr.nomad.mars.dto;
+
+public class UserPress {
+	
+	int seq = 0;
+	String userId = "";
+	int splessure = 0;
+	int dplessure = 0;
+	String regDate = "";
+	int status =0;
+	String statusTxt="";
+	String statusTxt2="";
+	
+	//View
+	
+	int num1=0;
+	int num2=0;
+	String type="";
+	String num1txt="";
+	String num2txt="";
+	
+	
+	
+	
+	
+	
+	public String getStatusTxt2() {
+		return statusTxt2;
+	}
+	public void setStatusTxt2(String statusTxt2) {
+		this.statusTxt2 = statusTxt2;
+	}
+	public String getNum1txt() {
+		String txt="";
+		if(this.type.equals("activity")){
+			if(this.num1==0){
+				txt="전혀 하지 않음";
+			}
+			if(this.num1==1){
+				txt="주 1~2회";
+			}
+			if(this.num1==2){
+				txt="주 3~4회";
+			}
+			if(this.num1==3){
+				txt="주 5회 이상";
+			}
+		}else if(this.type.equals("smoke")){
+			if(this.num1==0){
+				txt="피웠지만 끊었음";
+			}
+			if(this.num1==1){
+				txt="매일 0.5갑 미만";
+			}
+			if(this.num1==2){
+				txt="매일 0.5~1갑 미만";
+			}
+			if(this.num1==3){
+				txt="매일 1~2갑 미만";
+			}
+			if(this.num1==4){
+				txt="매일 2갑 이상";
+			}
+		}else if(this.type.equals("drink")){
+			if(this.num1==0){
+				txt="안마심";
+			}
+			if(this.num1==1){
+				txt="월 2회";
+			}
+			if(this.num1==2){
+				txt="주 1회";
+			}
+			if(this.num1==3){
+				txt="주 3회";
+			}
+			if(this.num1==4){
+				txt="거의 매일";
+			}
+		}else{
+			txt=Integer.toString(this.num1);
+		}
+		return txt;
+	}
+	public String getNum2txt() {
+		String txt="";
+		if(this.type.equals("activity")){
+			if(this.num2==0){
+				txt="30분이하";
+			}
+			if(this.num2==1){
+				txt="30~60분";
+			}
+			if(this.num2==2){
+				txt="60~120분";
+			}
+			if(this.num2==3){
+				txt="120분 이상";
+			}
+			
+		}else if(this.type.equals("drink")){
+			if(this.num2==0){
+				txt="소주반병(맥주 3잔)이하";
+			}
+			if(this.num2==1){
+				txt="소주1병(맥주 7잔)이하";
+			}
+			if(this.num2==2){
+				txt="소주2병(맥주 5병)미만";
+			}
+			if(this.num2==3){
+				txt="소주2병(맥주 5병)이상";
+			}
+			
+		}else{
+			txt=Integer.toString(this.num2);
+		}
+		return txt;
+	}
+	public int getNum1() {
+		return num1;
+	}
+	public void setNum1(int num1) {
+		this.num1 = num1;
+	}
+	public int getNum2() {
+		return num2;
+	}
+	public void setNum2(int num2) {
+		this.num2 = num2;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	
+	public String getStatusTxt() {
+		return statusTxt;
+	}
+	public void setStatusTxt(String statusTxt) {
+		this.statusTxt = statusTxt;
+	}
+	public int getStatus() {
+		return status;
+	}
+	public void setStatus(int status) {
+		this.status = status;
+	}
+	public int getSeq() {
+		return seq;
+	}
+	public void setSeq(int seq) {
+		this.seq = seq;
+	}
+	public String getUserId() {
+		return userId;
+	}
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+	public int getSplessure() {
+		return splessure;
+	}
+	public void setSplessure(int splessure) {
+		this.splessure = splessure;
+	}
+	public int getDplessure() {
+		return dplessure;
+	}
+	public void setDplessure(int dplessure) {
+		this.dplessure = dplessure;
+	}
+	public String getRegDate() {
+		return regDate;
+	}
+	public void setRegDate(String regDate) {
+		this.regDate = regDate;
+	}
+
+	
+
+}

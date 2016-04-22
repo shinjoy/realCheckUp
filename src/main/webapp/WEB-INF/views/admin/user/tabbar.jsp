@@ -1,0 +1,31 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<script>
+
+$(document).ready(function() {
+	var btn =$("#${diseaseId}");
+	$(".tab").removeClass("active");
+	$(btn).addClass("active");
+});
+
+
+
+</script>
+
+				<div class="btn-tools" style="margin-top:0;">	
+					<button type="button" class="btn-red" onclick="deleteUser('${user.userId}','${user.password}');">삭제</button>
+					<button type="button" class="btn" onclick="document.location.href='/admin/user/user.go';">목록</button>
+				</div>
+				
+				<div class="tab-bar">
+					<button type="button" id="view" class="tab" onclick="document.location.href='/admin/user/user_view.go?userId=${user.userId}';"><span>문진</span></button>
+					<button type="button" id="checkup" class="tab" onclick="document.location.href='/admin/user/user_checkup.go?userId=${user.userId}';"><span>검진</span></button>
+					<button type="button" id="bloodsugar" class="tab" onclick="document.location.href='/admin/user/bloodsugar.go?userId=${user.userId}';"><span>혈당</span></button>
+					<button type="button" id="pressure" class="tab" onclick="document.location.href='/admin/user/pressure.go?userId=${user.userId}';"><span>혈압</span></button>
+					<button type="button" id="weight" class="tab" onclick="document.location.href='/admin/user/weight.go?userId=${user.userId}';"><span>체중</span></button>
+					<button type="button" id="activity" class="tab" onclick="document.location.href='/admin/user/activity.go?userId=${user.userId}';"><span>활동량</span></button>
+					<button type="button" id="smoke" class="tab" onclick="document.location.href='/admin/user/smoke.go?userId=${user.userId}';"><span>흡연</span></button>
+					<button type="button" id="drink"  class="tab " onclick="document.location.href='/admin/user/drink.go?userId=${user.userId}';"><span>음주</span></button>
+					<button type="button" id="cholesterol" class="tab " onclick="document.location.href='/admin/user/cholesterol.go?userId=${user.userId}';"><span>콜레스테롤</span></button>
+					<button type="button" id="user_score" class="tab " onclick="document.location.href='/admin/user/user_score.go?userId=${user.userId}&type=health_score';"><span>건강점수</span></button>
+
+				</div>

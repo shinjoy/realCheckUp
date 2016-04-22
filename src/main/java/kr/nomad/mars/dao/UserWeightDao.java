@@ -1,0 +1,141 @@
+package kr.nomad.mars.dao;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
+import javax.sql.DataSource;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+
+import kr.nomad.mars.dto.UserWeight;
+
+public class UserWeightDao {
+	
+	private JdbcTemplate jdbcTemplate;
+	public void setDataSource(DataSource dataSource) {
+	    this.jdbcTemplate = new JdbcTemplate(dataSource);
+	}
+
+	private RowMapper userweightMapper = new RowMapper() {
+		public UserWeight mapRow(ResultSet rs, int rowNum) throws SQLException {
+			UserWeight userweight = new UserWeight();
+			userweight.setSeq(rs.getInt("seq"));
+			userweight.setUserId(rs.getString("user_id"));
+			userweight.setWeight(rs.getInt("weight"));
+			userweight.setBmi(rs.getDouble("bmi"));
+			userweight.setStatus(rs.getInt("status"));
+			userweight.setRegDate(rs.getString("reg_date"));
+			userweight.setCheckSeq(rs.getInt("checkSeq"));
+			return userweight;
+		}
+	};
+
+	public int addUserWeight(final UserWeight userweight) {
+		String query = "" +
+				"INSERT INTO T_NF_USER_WEIGHT " +
+				"	( user_id, weight, bmi, status , reg_date,checkSeq) " +
+				"VALUES " +
+				"	( ?, ?, ?, ?, ?, ?) ";
+		this.jdbcTemplate.update(query, new Object[] {
+		
+			userweight.getUserId(),
+			userweight.getWeight(),
+			userweight.getBmi(),
+			userweight.getStatus(),
+			userweight.getRegDate(),
+			userweight.getCheckSeq()
+		
+		});
+		
+		query=" select max(seq) from T_NF_USER_WEIGHT where user_id = ? ";
+		return this.jdbcTemplate.queryForInt(query, new Object[] {	userweight.getUserId()});
+	}
+
+	public void deleteUserWeight(int seq) {
+		String query = "DELETE FROM T_NF_USER_WEIGHT WHERE seq = ? ";
+		this.jdbcTemplate.update(query, new Object[] { seq });
+	}
+	
+
+	public void deleteUserWeightbyId(String userId) {
+		String query = "DELETE FROM T_NF_USER_WEIGHT WHERE user_id = ? ";
+		this.jdbcTemplate.update(query, new Object[] { userId });
+	}
+
+
+	public void updateUserWeight(UserWeight userweight) { 
+		String query = "" + 
+				"UPDATE T_NF_USER_WEIGHT SET " +
+				
+				"	user_id = ?, " +
+				"	weight = ?, " +
+				"	bmi = ?, " +
+				"	reg_date = ?, " +
+				"	checkSeq = ?, " +
+				"	status  = ? " +
+				
+				"WHERE seq = ? ";
+		this.jdbcTemplate.update(query, new Object[] {
+		
+			userweight.getUserId(),
+			userweight.getWeight(),
+			userweight.getBmi(),
+			userweight.getRegDate(),
+			userweight.getCheckSeq(),
+			userweight.getStatus(),
+			userweight.getSeq()
+		});
+	}
+
+	public UserWeight getUserWeight(int seq) {
+		String query = "" + 
+				"SELECT * " +
+				"FROM T_NF_USER_WEIGHT " +
+				"WHERE seq = ? ";
+		return (UserWeight)this.jdbcTemplate.queryForObject(query, new Object[] { seq }, this.userweightMapper);
+	}
+	
+	public UserWeight getUserWeightLimit1(String userId) {
+		String query = "" + 
+				"SELECT * " +
+				"FROM T_NF_USER_WEIGHT " +
+				"WHERE user_id = ?  order by reg_date desc, seq desc limit 1 ";
+		try{
+			return (UserWeight)this.jdbcTemplate.queryForObject(query, new Object[] { userId }, this.userweightMapper);
+		}catch(Exception e){
+			return new UserWeight();
+		}
+	}
+	public UserWeight getUserWeightCheckSeq(int seq) {
+		String query = "" + 
+				"SELECT * " +
+				"FROM T_NF_USER_WEIGHT " +
+				"WHERE checkSeq = ?  ";
+		try{
+			return (UserWeight)this.jdbcTemplate.queryForObject(query, new Object[] { seq }, this.userweightMapper);
+		}catch(Exception e){
+			return new UserWeight();
+		}
+	}
+	public List<UserWeight> getUserWeightList(String userId,int page, int itemCountPerPage) {
+		String query = ""
+	            + " SELECT * FROM ( "
+	            + " 	SELECT "
+	            + "			* "
+	            + " 	FROM T_NF_USER_WEIGHT "
+	            + " 	where user_id = ? " 
+	    		+ " 	ORDER BY reg_date DESC "
+	    		+ " ) AS a LIMIT " + (page - 1) * itemCountPerPage + "," + itemCountPerPage;
+		return (List<UserWeight>)this.jdbcTemplate.query(query,  new Object[] { userId },this.userweightMapper);
+	}
+	
+	public int getUserWeightCount(String userId) {
+		String query = "" + 
+				"SELECT count(*) " +
+				"FROM T_NF_USER_WEIGHT " +
+				"WHERE user_id = ? ";
+		return this.jdbcTemplate.queryForInt(query, new Object[] { userId });
+	}
+
+}

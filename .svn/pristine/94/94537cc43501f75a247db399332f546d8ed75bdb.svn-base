@@ -1,0 +1,77 @@
+package kr.nomad.mars.dto;
+
+public class UserBlood {
+	
+	int seq = 0;
+	String userId = "";
+	int bloodTime = 0;
+	int bloodKind = 0;
+	int bloodSugar = 0;
+	int status  = 0;
+	String regDate = "";
+	
+	String statusTxt="";
+	int checkSeq=0;
+	
+	
+	
+	public int getCheckSeq() {
+		return checkSeq;
+	}
+	public void setCheckSeq(int checkSeq) {
+		this.checkSeq = checkSeq;
+	}
+	public String getStatusTxt() {
+		return statusTxt;
+	}
+	public void setStatusTxt(String statusTxt) {
+		this.statusTxt = statusTxt;
+	}
+	public int getSeq() {
+		return seq;
+	}
+	public void setSeq(int seq) {
+		this.seq = seq;
+	}
+	public String getUserId() {
+		return userId;
+	}
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+	public int getBloodTime() {
+		return bloodTime;
+	}
+	public void setBloodTime(int bloodTime) {
+		this.bloodTime = bloodTime;
+	}
+	public int getBloodKind() {
+		return bloodKind;
+	}
+	public void setBloodKind(int bloodKind) {
+		this.bloodKind = bloodKind;
+	}
+	
+	public int getBloodSugar() {
+		return bloodSugar;
+	}
+	public void setBloodSugar(int bloodSugar) {
+		this.bloodSugar = bloodSugar;
+	}
+	public int getStatus() {
+		return status;
+	}
+	public void setStatus(int status) {
+		this.status = status;
+	}
+	public String getRegDate() {
+		return regDate;
+	}
+	public void setRegDate(String regDate) {
+		this.regDate = regDate;
+	}
+
+	
+	
+
+}

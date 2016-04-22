@@ -1,0 +1,62 @@
+package kr.nomad.mars.dto;
+
+public class UserDrink {
+	
+	int seq = 0;
+	String userId = "";
+	int avgPeriodDrinking  = 0;
+	int avgDrinkingCapacity= 0;
+	int status  = 0;
+	String regDate = "";
+	
+	String statusTxt="";
+	
+	
+	
+	
+	public String getStatusTxt() {
+		return statusTxt;
+	}
+	public void setStatusTxt(String statusTxt) {
+		this.statusTxt = statusTxt;
+	}
+	public int getSeq() {
+		return seq;
+	}
+	public void setSeq(int seq) {
+		this.seq = seq;
+	}
+	public String getUserId() {
+		return userId;
+	}
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+	public int getAvgPeriodDrinking() {
+		return avgPeriodDrinking;
+	}
+	public void setAvgPeriodDrinking(int avgPeriodDrinking) {
+		this.avgPeriodDrinking = avgPeriodDrinking;
+	}
+	public int getAvgDrinkingCapacity() {
+		return avgDrinkingCapacity;
+	}
+	public void setAvgDrinkingCapacity(int avgDrinkingCapacity) {
+		this.avgDrinkingCapacity = avgDrinkingCapacity;
+	}
+	public int getStatus() {
+		return status;
+	}
+	public void setStatus(int status) {
+		this.status = status;
+	}
+	public String getRegDate() {
+		return regDate;
+	}
+	public void setRegDate(String regDate) {
+		this.regDate = regDate;
+	}
+	
+	
+
+}

@@ -1,0 +1,622 @@
+package kr.nomad.mars.dao;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.sql.DataSource;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+
+
+import kr.nomad.mars.dto.User;
+import kr.nomad.util.T;
+
+public class UserDao {
+	private JdbcTemplate jdbcTemplate;
+	public void setDataSource(DataSource dataSource) {
+	    this.jdbcTemplate = new JdbcTemplate(dataSource);
+	}
+
+	private RowMapper userMapper = new RowMapper() {
+		public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+			User user = new User();
+			user.setUserId(rs.getString("user_id"));
+			user.setPassword(rs.getString("password"));
+			user.setUserType(rs.getInt("user_type"));
+			user.setUserName(rs.getString("user_name"));
+			user.setPhoneNumber(rs.getString("phone_number"));
+			user.setBirthday(rs.getString("birthday"));
+			user.setGender(rs.getInt("gender"));
+			user.setFileName(rs.getString("file_name"));
+			user.setRegDate(rs.getString("reg_date"));
+			user.setLastLogindate(rs.getString("last_logindate"));
+			user.setLoginNaver(rs.getInt("login_naver"));
+			user.setLoginKakao(rs.getInt("login_kakao"));
+			user.setOsType(rs.getString("os_type"));
+			user.setOsVersion(rs.getString("os_version"));
+			user.setAppVersion(rs.getString("app_version"));
+			user.setDeviceName(rs.getString("device_name"));
+			user.setDeviceId(rs.getString("device_id"));
+			user.setPushkey(rs.getString("pushkey"));
+			user.setUsePushservice(rs.getInt("use_pushservice"));
+			user.setStatus(rs.getInt("status"));
+			user.setLoginStatus(rs.getString("login_status"));
+		   
+			user.setNoticeBadge(rs.getInt("notice_badge"));
+			user.setApplyPrivacy(rs.getInt("apply_privacy"));
+			user.setApplyPrivacyDate(rs.getString("apply_privacy_date"));
+			user.setApplyTerms(rs.getInt("apply_terms"));
+			user.setApplyTermsDate(rs.getString("apply_terms_date"));
+			user.setExamNum(rs.getInt("exam_num"));
+			user.setCheckNum(rs.getInt("check_num"));
+			 user.setAimmedId(rs.getString("aimmed_id"));
+			 user.setGroupName(rs.getString("group_name"));
+			 user.setGroupCode(rs.getString("group_code"));
+			return user;
+		}
+	};
+	
+
+	
+	public User getUser(String user_id) {
+		String query = "" + 
+				"SELECT * " +
+				"FROM T_NF_USER " +
+				"WHERE user_id = ? ";
+		try {
+			return (User)this.jdbcTemplate.queryForObject(query, new Object[] { user_id }, this.userMapper);
+		} catch (Exception e) {
+			return new User();
+		}
+	}
+	
+	public List<User> getAllUser() {
+		String query = "" + 
+				"SELECT * " +
+				"FROM T_NF_USER " +
+				"WHERE user_type =3 and status =1 ";
+		try {
+			return (List<User>)this.jdbcTemplate.query(query, this.userMapper);
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
+	}
+	
+
+	
+	
+	/**
+	 * 아이디 패스워드 일치 확인
+	 * @param userId
+	 * @param password
+	 * @return
+	 */
+	public boolean correctPw(String userId, String password) {		
+	    String query = "SELECT count(*) AS id_cnt FROM T_NF_USER WHERE user_id = ? and password = ? ";
+	    try {
+		    return this.jdbcTemplate.queryForInt(query, new Object[] { userId, password}) > 0;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	public boolean correctNaver(String userId) {		
+	    String query = "SELECT count(*) AS id_cnt FROM T_NF_USER WHERE user_id = ? and login_naver = 1";
+	    try {
+		    return this.jdbcTemplate.queryForInt(query, new Object[] { userId}) > 0;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	public boolean correctKakao(String userId) {		
+	    String query = "SELECT count(*) AS id_cnt FROM T_NF_USER WHERE user_id = ? and login_kakao = 1";
+	    try {
+		    return this.jdbcTemplate.queryForInt(query, new Object[] { userId}) > 0;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	
+	/**
+	 * 로그인성공시 업데이트
+	 * 
+	 * 
+	 */
+	
+	public void updateUserData(User user) { 
+		String query = "" + 
+				"UPDATE T_NF_USER SET " +
+				"	last_logindate = SYSDATE() , " +
+				"	os_type = ?, " +
+				"	os_version = ?, " +
+				"	app_version = ?, " +
+				"	device_name = ?, " +
+				"	device_id = ?, " +
+				"	pushkey = ?, " +
+				"	login_status = 1 " +
+				"WHERE user_id = ? ";
+		this.jdbcTemplate.update(query, new Object[] {
+			
+			user.getOsType(),
+			user.getOsVersion(),
+			user.getAppVersion(),
+			user.getDeviceName(),
+			user.getDeviceId(),
+			user.getPushkey(),
+			user.getUserId()
+		});
+	}
+	public void updateadmin(User user) { 
+		String query = "" + 
+				"UPDATE T_NF_USER SET " +
+				"	user_name = ?, " +
+				"	birthday = ?, " +
+				"	gender = ? " +
+			
+				"WHERE user_id = ? ";
+		this.jdbcTemplate.update(query, new Object[] {
+				user.getUserName(),
+			
+				user.getBirthday(),
+				user.getGender(),
+	
+				user.getUserId()
+				
+		});
+	}
+
+	/**
+	 * 아이디 중복 확인
+	 * @param userId
+	 * @return
+	 */
+	public boolean correctId(String userId) {
+		String query = "SELECT COUNT(*) FROM T_NF_USER WHERE user_id = ? ";
+		return (this.jdbcTemplate.queryForInt(query, new Object[] { userId }) == 1);
+	}
+	
+	/**
+	 * 전화번호중복 확인
+	 * 
+	 * 
+	 */
+	
+	
+	public boolean correctPhone(String phoneNumber) {
+		String query = "SELECT COUNT(*) FROM T_NF_USER WHERE phone_number = ? ";
+		return (this.jdbcTemplate.queryForInt(query, new Object[] { phoneNumber }) == 1);
+	}
+	
+
+	/**
+	 * 아이디 찾기
+	 * @param phoneNumber
+	 * @return
+	 */
+	
+	public User findId(String phoneNumber,String userName) {
+		String query = "" + 
+				"SELECT * " +
+				"FROM T_NF_USER " +
+				"WHERE phone_number = ? and user_name = ? ";
+		
+		try {
+			return (User)this.jdbcTemplate.queryForObject(query, new Object[] {phoneNumber ,userName }, this.userMapper);
+			
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * 비밀번호 찾기
+	 * @param userId
+	 * @return
+	 */
+	public boolean findPw(String userId,String phoneNumber) {
+		String query = "SELECT count(*) AS id_cnt FROM T_NF_USER WHERE user_id = ? and phone_number = ?";
+	   try {
+		    return this.jdbcTemplate.queryForInt(query, new Object[] { userId, phoneNumber}) > 0;
+		    } catch (Exception e) {
+			return false;
+		}
+		
+	}
+	
+	/**
+	 * 비밀번호 재설정
+	 * @param userId
+	 * @return
+	 */
+	public void updatePw(String userId,String password) {
+		String query = "" + 
+				"UPDATE T_NF_USER SET " +
+				"	password = ? " +
+				"WHERE user_id = ? ";
+		this.jdbcTemplate.update(query, new Object[] {
+			password,
+			userId
+		});
+		
+	}
+	
+
+
+	/**
+	 * 유저정보 가져오기
+	 * 
+	 * 
+	 */
+	
+	public User getUsers(String userId) {
+		String query = "" + 
+				"SELECT * " +
+				"FROM T_NF_USER " +
+				"WHERE user_id = ?  ";
+		
+		try {
+			return (User)this.jdbcTemplate.queryForObject(query, new Object[] { userId }, this.userMapper);
+			
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	/**
+	 * 탈퇴
+	 * 
+	 * 
+	 */
+	
+	public void deleteUser(String id) {
+		
+		String query = "DELETE FROM T_NF_USER WHERE user_id = ? ";
+		try {
+				this.jdbcTemplate.update(query, new Object[] { id  });
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+
+	//회원가입
+	public void addUser(final User user) {
+		String query = "" +
+				"INSERT INTO T_NF_USER"+ 
+				" (user_id, password, user_type,"
+				+ " user_name, phone_number, birthday,"
+				+ " gender, reg_date, last_logindate,"
+				+ " os_type, os_version, app_version,"
+				+ " device_name, device_id, pushkey,"
+				+ " use_pushservice, status, file_name,"
+				+ " login_naver, login_kakao, aimmed_id,"
+				+ " group_code, group_name, apply_terms,"
+				+ "apply_terms_date, apply_privacy,apply_privacy_date,"
+				+ "exam_num,check_num) "+
+				" VALUES " +
+				" ( ?, ?, ?,"
+				+ " ?, ?, ?,"
+				+ " ?, SYSDATE(),SYSDATE(),"
+				+ " ?, ?, ?,"
+				+ " ?, ?, ?,"
+				+ " ?, ?, ?,"
+				+ " ?, ?, ?,"
+				+ " ?, ?, ?,"
+				+ "SYSDATE(), ?, SYSDATE(),"
+				+ "?,?) " ;
+		this.jdbcTemplate.update(query, new Object[] {
+			user.getUserId(),
+			user.getPassword(),
+			user.getUserType(),
+			user.getUserName(),
+			user.getPhoneNumber(),
+			user.getBirthday(),
+			user.getGender(),
+			
+			user.getOsType(),
+			user.getOsVersion(),
+			user.getAppVersion(),
+			user.getDeviceName(),
+			user.getDeviceId(),
+			user.getPushkey(),
+			user.getUsePushservice(),
+			user.getStatus(),
+			user.getFileName(),
+			user.getLoginNaver(),
+			user.getLoginKakao(),
+			user.getAimmedId(),
+			user.getGroupCode(),
+			user.getGroupName()	,
+			user.getApplyTerms(),
+	
+			user.getApplyPrivacy(),
+			user.getExamNum(),
+			user.getCheckNum()
+		
+		});
+	}
+	
+	//전화번호변경
+	public void editPhone(String id,String ph ) { 
+		String query = "" + 
+				"UPDATE T_NF_USER SET " +
+			    "	phone_number = ? " +
+				"WHERE user_id = ? ";
+		this.jdbcTemplate.update(query, new Object[] {ph,id});
+	}
+	
+	/**
+	 * 프로필 사진 등록
+	 * @param user
+	 */
+	public void updateProfileImgAdd(String id,String filename) {
+		String query = "" +
+				"UPDATE T_NF_USER SET " +
+				" file_name = ? " +
+				"WHERE user_id = ?" ;
+			this.jdbcTemplate.update(query,new Object[]{
+				filename,id
+			});
+	}
+
+	
+	public void updateUser(String userId) { 
+		String query = "" + 
+				"UPDATE T_NF_USER SET " +
+				"	user_med = 1 " +
+				"WHERE user_id = ? ";
+		this.jdbcTemplate.update(query, new Object[] {
+				userId
+		});
+	}
+	
+	
+	public void updatedrop(String userId) { 
+		String query = "" + 
+				"UPDATE T_NF_USER SET " +
+				"	phone_number ='', " +
+				"	pushkey ='', " +
+				"	login_status = 0 , " +
+				"	status = 4 " +
+				"WHERE user_id = ? ";
+		this.jdbcTemplate.update(query, new Object[] {
+				userId
+		});
+	}
+	
+	public void updateExamNum(String userId,int examNum) { 
+		String query = "" + 
+				"UPDATE T_NF_USER SET " +
+			
+				"	exam_num = ? " +
+				"WHERE user_id = ? ";
+		this.jdbcTemplate.update(query, new Object[] {
+				examNum,userId
+		});
+	}
+	public void updateCheckNum(String userId,int Num) { 
+		String query = "" + 
+				"UPDATE T_NF_USER SET " +
+			
+				"	check_num = ? " +
+				"WHERE user_id = ? ";
+		this.jdbcTemplate.update(query, new Object[] {
+				Num,userId
+		});
+	}
+
+	public void updateout(String userId) { 
+		String query = "" + 
+				"UPDATE T_NF_USER SET " +
+			    " login_status = 0, "+
+				" pushkey ='' "+
+				" WHERE user_id = ? ";
+		this.jdbcTemplate.update(query, new Object[] {userId});
+	}
+	
+	
+	
+//////////////////////////////////////////////////	
+	
+	
+	public void updateUser(User user) { 
+		String query = "" + 
+				"UPDATE T_NF_USER SET " +
+			
+				"	user_name = ?, " +
+				"	phone_number = ?, " +
+				"	birthday = ?, " +
+				"	gender = ?, " +
+			
+				"	use_pushservice = ? " +
+		
+				"WHERE user_id = ? ";
+		this.jdbcTemplate.update(query, new Object[] {
+		
+		
+			user.getUserName(),
+			user.getPhoneNumber(),
+			user.getBirthday(),
+			user.getGender(),
+			user.getUsePushservice(),
+	
+			user.getUserId()
+		});
+	}
+	/** 사용자 목록 **/
+	public List<User> getUserList(int userType,String keyword, int gender, int age,  int page, int itemCountPerPage) {
+	    
+		String condition = "WHERE status=1  ";
+	    
+	    int year = Integer.parseInt(T.getTodayYear());
+	    if(userType>0){
+	    	condition += " AND user_type = "+ userType +" ";
+	    }
+		if (gender != 0) {
+			condition += " AND gender = "+ gender +" ";
+		}
+	    
+	    if (keyword.equals("") == false) {
+			condition += " AND user_name like '%"+ keyword +"%' OR user_id like '%" + keyword + "%'";
+		}
+	    
+	    if (age == 1) {
+			condition += " AND ((SUBSTRING(birthday,1,4)) between "+(year-19)+" and "+(year-10)+")";
+		} else if (age == 2) {
+			condition += "  AND ((SUBSTRING(birthday,1,4)) between "+(year-29)+" and "+(year-20)+")";
+		} else if (age == 3) {
+			condition += "  AND ((SUBSTRING(birthday,1,4)) between "+(year-39)+"  and "+(year-30)+")";
+		} else if (age == 4) {
+			condition += "  AND ((SUBSTRING(birthday,1,4)) between "+(year-49)+" and "+(year-40)+")";
+		} else if (age == 5) {
+			condition += "  AND ((SUBSTRING(birthday,1,4)) between "+(year-89)+" and "+(year-50)+")";
+		}
+		
+	 	String query = ""
+	            + " SELECT * "
+	            + "	FROM ( "
+	            + " 	SELECT "
+	            + " 		* "
+	            + " 	FROM T_NF_USER "
+	            + " " + condition
+	    		+ " 	ORDER BY reg_date DESC "
+	    		+ "	) AS a LIMIT " + (page - 1) * itemCountPerPage + "," + itemCountPerPage;
+	    return (List<User>)this.jdbcTemplate.query(query,this.userMapper);
+	}
+	
+	/** 사용자 목록 **/
+	public List<User> getUserListNopaging(int userType,String keyword, int gender, int age) {
+	    
+		String condition = "WHERE status=1  ";
+	    
+	    int year = Integer.parseInt(T.getTodayYear());
+	    if(userType>0){
+	    	condition += " AND user_type = "+ userType +" ";
+	    }
+		if (gender != 0) {
+			condition += " AND gender = "+ gender +" ";
+		}
+	    
+	    if (keyword.equals("") == false) {
+			condition += " AND user_name like '%"+ keyword +"%' OR user_id like '%" + keyword + "%'";
+		}
+	    
+	    if (age == 1) {
+			condition += " AND ((SUBSTRING(birthday,1,4)) between "+(year-19)+" and "+(year-10)+")";
+		} else if (age == 2) {
+			condition += "  AND ((SUBSTRING(birthday,1,4)) between "+(year-29)+" and "+(year-20)+")";
+		} else if (age == 3) {
+			condition += "  AND ((SUBSTRING(birthday,1,4)) between "+(year-39)+"  and "+(year-30)+")";
+		} else if (age == 4) {
+			condition += "  AND ((SUBSTRING(birthday,1,4)) between "+(year-49)+" and "+(year-40)+")";
+		} else if (age == 5) {
+			condition += "  AND ((SUBSTRING(birthday,1,4)) between "+(year-89)+" and "+(year-50)+")";
+		}
+		
+	    
+	 	String query = ""
+	          
+	            + " 	SELECT "
+	            + " 		* "
+	            + " 	FROM T_NF_USER "
+	            + " " + condition
+	    		+ " 	ORDER BY reg_date DESC ";
+	    return (List<User>)this.jdbcTemplate.query(query,this.userMapper);
+	}
+	/** 일반회원 갯수 **/
+	public int getCount(int userType,String keyword, int gender, int age) {
+		
+		String condition = "WHERE status=1  ";
+	    
+	    int year = Integer.parseInt(T.getTodayYear());
+	    
+		if (gender != 0) {
+			condition += " AND gender = "+ gender +" ";
+		}
+		if(userType>0){
+		    	condition += " AND user_type = "+ userType +" ";
+		}
+	    if (keyword.equals("") == false) {
+			condition += " AND user_name like '%"+ keyword +"%' OR user_id like '%" + keyword + "%'";
+		}
+	    
+		if (age == 1) {
+			condition += " AND ((SUBSTRING(birthday,1,4)) between "+(year-19)+" and "+(year-10)+")";
+		} else if (age == 2) {
+			condition += "  AND ((SUBSTRING(birthday,1,4)) between "+(year-29)+" and "+(year-20)+")";
+		} else if (age == 3) {
+			condition += "  AND ((SUBSTRING(birthday,1,4)) between "+(year-39)+"  and "+(year-30)+")";
+		} else if (age == 4) {
+			condition += "  AND ((SUBSTRING(birthday,1,4)) between "+(year-49)+" and "+(year-40)+")";
+		} else if (age == 5) {
+			condition += "  AND ((SUBSTRING(birthday,1,4)) between "+(year-89)+" and "+(year-50)+")";
+		}
+		
+	    String query = " SELECT COUNT(*) FROM T_NF_USER "+ condition;
+	    
+	    return this.jdbcTemplate.queryForInt(query);
+	}
+	
+	
+	
+	/**
+	 * 닉네임 중복 확인
+	 * @param userId
+	 * @return
+	 */
+	public boolean correctNick(String userName) {
+		String query = "SELECT COUNT(*) FROM T_NF_USER WHERE user_name = ? ";
+		return (this.jdbcTemplate.queryForInt(query, new Object[] { userName }) == 1);
+	}
+	
+	
+
+
+
+	
+
+	
+	
+	
+	/**
+	 * 비밀번호 변경
+	 * @param userId
+	 * @param userPassword
+	 */
+	public void updateUserPassword(String userId, String password) { 
+		String query = "" + 
+				"	UPDATE T_NF_USER  " +
+				"	SET password = ? " +
+				"	WHERE user_id = ? ";
+		this.jdbcTemplate.update(query, new Object[] { password, userId });
+	}
+	
+	//최근등록회원
+	public List<User> getUserTop3() {
+		
+		
+
+		String query = ""
+	         
+	            + " 	SELECT "
+	            + " 		* "
+	            + " 	FROM T_NF_USER "
+	            + " where user_type=3 "
+	            + " order by reg_date desc limit 3";
+	       
+	    return (List<User>)this.jdbcTemplate.query(query, this.userMapper);
+	}
+	
+	//일반회원,관리자 수
+	public int getCount(int type ) {
+		
+		String query = " SELECT COUNT(*) FROM T_NF_USER where user_type= ? ";
+	    return this.jdbcTemplate.queryForInt(query,new Object[] { type });
+	}
+	
+	
+	
+}

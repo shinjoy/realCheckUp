@@ -1,0 +1,43 @@
+package kr.nomad.mars.dto;
+
+public class Config {
+	
+	static public String DISEASE_BLOODSUGAR="bloodsugar";
+	static public String DISEASE_PRESSURE="pressure";
+	static public String DISEASE_CHOLESTEROL="cholesterol";
+	static public String DISEASE_ACTIVITY="activity";
+	static public String DISEASE_SMOKE="smoke";
+	static public String DISEASE_DRINK="drink";
+	static public String DISEASE_WEIGHT="weight";
+	
+	int appSeq = 0;
+	String appVersion = "";
+	String comment = "";
+	String regDate = "";
+	
+	public int getAppSeq() {
+		return appSeq;
+	}
+	public void setAppSeq(int appSeq) {
+		this.appSeq = appSeq;
+	}
+	public String getAppVersion() {
+		return appVersion;
+	}
+	public void setAppVersion(String appVersion) {
+		this.appVersion = appVersion;
+	}
+	public String getComment() {
+		return comment;
+	}
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+	public String getRegDate() {
+		return regDate;
+	}
+	public void setRegDate(String regDate) {
+		this.regDate = regDate;
+	}
+
+}
